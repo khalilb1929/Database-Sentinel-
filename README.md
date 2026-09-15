@@ -46,6 +46,35 @@ for every picture whether it was **saved**, **rejected**, **failed** or **skippe
 All pictures sit on **exactly the same grid**: pixel (500, 500) is the same spot on the ground on
 every date.
 
+### How the 13 spectral bands are obtained
+
+- In each Sentinel-2 product, every band (B01 to B12, plus B8A) is a **separate JPEG2000 file**, from
+  coastal blue (443 nm) to short-wave infrared (2190 nm).
+- The bands do not have the same pixel size: **10 m** (B02, B03, B04, B08), **20 m** (B05, B06, B07,
+  B8A, B11, B12) and **60 m** (B01, B09, B10).
+- The pipeline reads only the part of each file covering your square. It copies the 10 m bands
+  pixel-for-pixel and resamples the 20 m and 60 m bands to 10 m with bilinear interpolation.
+- The 13 results are stacked in a fixed order into one `(13, 1024, 1024)` array. A pixel is valid
+  **band by band**: a hole in one band never borrows data from another band.
+
+### How the satellite's changing orbit is handled
+
+- Sentinel-2 does not always fly over the same track: your area can be seen from **different relative
+  orbits**, at different viewing angles, sometimes near the edge of the swath.
+- ESA delivers L1C data **already orthorectified**, corrected for orbit, viewing angle and terrain, and
+  cut into fixed 100 × 100 km **MGRS tiles** on a UTM grid.
+- The pipeline builds **one fixed UTM grid**, snapped to multiples of 60 m. That is the pixel lattice
+  shared by all Sentinel-2 tiles, so every date lands on the same pixels without any shift.
+- If the best tile of a date is in a neighbouring UTM zone, it is reprojected onto that same grid.
+- A pass near the edge of the swath only partly covers your square. The missing part becomes
+  *nodata*, and the image is rejected if too much is missing.
+- The remaining multi-date misalignment is ESA's own geolocation accuracy (sub-pixel). The
+  pipeline does not correct it further. Viewing and sun angles are not corrected either, only
+  recorded in `metadata.csv` (`relative_orbit`, `view_incidence_angle`, `sun_elevation`,
+  `sun_azimuth`).
+- Since 2022 (processing baseline 04.00), ESA adds **+1000** to every value. `--harmonize` removes
+  it so old and new dates are comparable.
+
 ---
 
 ## Tutorial: your first call
