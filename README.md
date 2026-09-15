@@ -1,58 +1,58 @@
 # Sentinel-2 L1C Time-Series Pipeline
 
-Imagine que tu veux un **album photo d'un même endroit vu du ciel**, une photo par jour où le satellite
-Sentinel-2 est passé. Cette pipeline fabrique cet album automatiquement à partir des données du
+Imagine you want a **photo album of one place seen from space**, one picture for every day the
+Sentinel-2 satellite flew over it. This pipeline builds that album automatically from the
 [Copernicus Data Space Ecosystem (CDSE)](https://dataspace.copernicus.eu/).
 
 ---
 
-## Ce qu'il se passe dans la pipeline
+## What happens inside the pipeline
 
-Elle travaille en 4 étapes.
+It works in 4 steps.
 
-### 1. Chercher (discovery)
+### 1. Search (discovery)
 
-Tu donnes un point (latitude, longitude) et deux dates. La pipeline demande au catalogue de Copernicus :
-« Quelles photos Sentinel-2 existent ici entre ces deux dates ? »
+You give a point (latitude, longitude) and two dates. The pipeline asks the Copernicus catalogue:
+"Which Sentinel-2 pictures exist here between these two dates?"
 
-Elle note **toutes** les réponses dans un cahier (`metadata.csv`), même celles qu'elle jettera ensuite.
+It writes **every** answer in a notebook (`metadata.csv`), even the ones it will throw away later.
 
-### 2. Trier (selection)
+### 2. Sort (selection)
 
-Elle enlève ce qui ne sert à rien :
+It removes what is not useful:
 
-- les **doublons** : même photo retraitée plusieurs fois par l'ESA, elle garde la plus récente ;
-- les photos **trop nuageuses** ;
-- les photos qui **ne couvrent pas bien** ta zone ;
-- s'il y a plusieurs photos le même jour, elle garde **la meilleure**.
+- **duplicates**: the same picture reprocessed several times by ESA, it keeps the most recent version;
+- pictures that are **too cloudy**;
+- pictures that **do not cover your area** well enough;
+- if there are several pictures on the same day, it keeps **the best one**.
 
-Pour chaque photo jetée, elle écrit **pourquoi** dans le cahier.
+For every picture it throws away, it writes **why** in the notebook.
 
-### 3. Vérifier (contrôle qualité)
+### 3. Check (quality control)
 
-Pour les photos gardées, elle télécharge un carré de **10 km × 10 km** (1024 × 1024 pixels, 10 m par
-pixel), dans les **13 couleurs** (bandes) du satellite. Ensuite elle regarde chaque pixel :
+For the pictures it keeps, it downloads a **10 km × 10 km** square (1024 × 1024 pixels, 10 m per
+pixel), in the satellite's **13 colours** (bands). Then it looks at every pixel:
 
-- « Est-ce qu'il y a vraiment une donnée ici ? » (sinon c'est un trou, du *nodata*) ;
-- « Est-ce que c'est un nuage ? Un pixel abîmé ? Trop brillant (saturé) ? »
+- "Is there really data here?" (otherwise it is a hole, called *nodata*);
+- "Is it a cloud? A damaged pixel? Too bright (saturated)?"
 
-Si la photo a trop de trous, de nuages ou de défauts, elle est **rejetée**.
+If the picture has too many holes, clouds or defects, it is **rejected**.
 
-### 4. Ranger (output)
+### 4. Store (output)
 
-Les photos qui passent le contrôle sont enregistrées en fichiers `.npz`, un par date. Le cahier
-`metadata.csv` dit pour chaque photo si elle a été **sauvée**, **rejetée**, en **échec** ou **déjà là**.
+Pictures that pass the check are saved as `.npz` files, one per date. The `metadata.csv` notebook says
+for every picture whether it was **saved**, **rejected**, **failed** or **skipped** (already there).
 
-Toutes les photos sont posées sur **exactement la même grille** : le pixel (500, 500) est le même
-endroit au sol à chaque date.
+All pictures sit on **exactly the same grid**: pixel (500, 500) is the same spot on the ground on
+every date.
 
 ---
 
-## Tuto : faire ton premier appel
+## Tutorial: your first call
 
-### Étape 0 : installer (une seule fois)
+### Step 0: install (once)
 
-Dans un terminal, dans le dossier du projet :
+In a terminal, inside the project folder:
 
 ```bash
 python -m venv .venv
@@ -62,33 +62,33 @@ python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-(Sous Linux / macOS, remplace `.venv\Scripts\python.exe` par `.venv/bin/python` partout dans ce tuto.)
+(On Linux / macOS, replace `.venv\Scripts\python.exe` with `.venv/bin/python` everywhere in this tutorial.)
 
-### Étape 1 : donner tes clés Copernicus (une seule fois)
+### Step 1: add your Copernicus keys (once)
 
-Chercher des photos est gratuit et anonyme, mais **télécharger** demande un compte CDSE gratuit.
+Searching for pictures is free and anonymous, but **downloading** requires a free CDSE account.
 
-1. Crée un compte sur <https://dataspace.copernicus.eu/>.
-2. Génère des clés S3 sur <https://eodata-s3keysmanager.dataspace.copernicus.eu>.
-3. Crée un fichier `.env` à la racine du projet avec :
+1. Create an account at <https://dataspace.copernicus.eu/>.
+2. Generate S3 keys at <https://eodata-s3keysmanager.dataspace.copernicus.eu>.
+3. Create a `.env` file at the root of the project containing:
 
 ```text
-CDSE_S3_ACCESS_KEY=ta_cle_d_acces
-CDSE_S3_SECRET_KEY=ta_cle_secrete
+CDSE_S3_ACCESS_KEY=your_access_key
+CDSE_S3_SECRET_KEY=your_secret_key
 ```
 
-Le fichier `.env` est ignoré par git : tes clés ne partent pas sur GitHub.
+The `.env` file is ignored by git, so your keys never end up on GitHub.
 
-### Étape 2 : regarder avant de télécharger
+### Step 2: look before downloading
 
-Un appel = une commande avec **où**, **quand** et **dans quel dossier ranger**. Ajoute `--dry_run` pour
-juste voir la liste des dates, sans rien télécharger :
+A call is one command saying **where**, **when**, and **which folder to store things in**. Add
+`--dry_run` to only see the list of dates, without downloading anything:
 
 ```bash
 .venv\Scripts\python.exe s2_l1c_pipeline.py --lat 48.8566 --lon 2.3522 --start_date 2023-01-01 --end_date 2023-12-31 --max_cloud 20 --output_dir data/paris_2023 --dry_run
 ```
 
-Tu obtiens quelque chose comme :
+You get something like:
 
 ```text
 date        tile   cloud%  cover  base        crs  item_id
@@ -97,84 +97,84 @@ date        tile   cloud%  cover  base        crs  item_id
 ...
 ```
 
-### Étape 3 : télécharger pour de vrai
+### Step 3: download for real
 
-Même commande, **sans** `--dry_run` :
+Same command, **without** `--dry_run`:
 
 ```bash
 .venv\Scripts\python.exe s2_l1c_pipeline.py --lat 48.8566 --lon 2.3522 --start_date 2023-01-01 --end_date 2023-12-31 --max_cloud 20 --output_dir data/paris_2023
 ```
 
-Compte environ 30 secondes par date. Si ça s'arrête en route (coupure, PC fermé), **relance exactement
-la même commande** : la pipeline reprend où elle en était.
+Expect about 30 seconds per date. If it stops halfway (network cut, laptop closed), **run exactly the
+same command again**: the pipeline picks up where it left off.
 
-### Étape 4 : ouvrir tes images
+### Step 4: open your images
 
 ```python
 import numpy as np
 
 z = np.load("data/paris_2023/2023-02-07_31UDQ.npz")
-image = z["data"]        # les 13 bandes : forme (13, 1024, 1024)
-bons = z["valid_mask"]   # True = pixel fiable, False = trou ou pixel douteux
-bandes = z["bands"].tolist()
+image = z["data"]        # the 13 bands: shape (13, 1024, 1024)
+good = z["valid_mask"]   # True = reliable pixel, False = hole or doubtful pixel
+bands = z["bands"].tolist()
 
-rouge = image[bandes.index("B04")]
-vert = image[bandes.index("B03")]
-bleu = image[bandes.index("B02")]
+red = image[bands.index("B04")]
+green = image[bands.index("B03")]
+blue = image[bands.index("B02")]
 ```
 
-Pour savoir pourquoi une date manque, ouvre `data/paris_2023/metadata.csv` (par exemple dans Excel) et
-regarde les colonnes `status` et `rejection_reason`.
+To find out why a date is missing, open `data/paris_2023/metadata.csv` (in Excel, for example) and look
+at the `status` and `rejection_reason` columns.
 
-### Autres exemples d'appels
+### More example calls
 
-Les 20 images les plus claires entre 2020 et 2024 à Toulouse :
+The 20 clearest images between 2020 and 2024 in Toulouse:
 
 ```bash
 .venv\Scripts\python.exe s2_l1c_pipeline.py --lat 43.6047 --lon 1.4442 --start_date 2020-01-01 --end_date 2024-12-31 --max_cloud 20 --max_images 20 --sort cloud --output_dir data/toulouse_top20
 ```
 
-Des images vraiment sans nuages **sur ta zone** (tri grossier puis tri fin) :
+Images that are really cloud-free **over your area** (rough sort, then fine sort):
 
 ```bash
-.venv\Scripts\python.exe s2_l1c_pipeline.py --lat 48.8566 --lon 2.3522 --start_date 2023-01-01 --end_date 2023-12-31 --max_cloud 30 --max_cloud_fraction 0.05 --output_dir data/paris_2023_clair
+.venv\Scripts\python.exe s2_l1c_pipeline.py --lat 48.8566 --lon 2.3522 --start_date 2023-01-01 --end_date 2023-12-31 --max_cloud 30 --max_cloud_fraction 0.05 --output_dir data/paris_2023_clear
 ```
 
 ---
 
-## Les paramètres qui t'intéressent
+## The parameters you care about
 
-### Les indispensables
+### The essentials
 
-| Paramètre | C'est quoi | Exemple |
+| Parameter | What it is | Example |
 |---|---|---|
-| `--lat`, `--lon` | Le centre de ta zone | `--lat 48.8566 --lon 2.3522` (Paris) |
-| `--start_date`, `--end_date` | Tes 2 dates (incluses), format `AAAA-MM-JJ` | `--start_date 2023-01-01 --end_date 2023-12-31` |
-| `--output_dir` | Le dossier où ranger les fichiers | `--output_dir data/paris_2023` |
+| `--lat`, `--lon` | The centre of your area | `--lat 48.8566 --lon 2.3522` (Paris) |
+| `--start_date`, `--end_date` | Your 2 dates (inclusive), format `YYYY-MM-DD` | `--start_date 2023-01-01 --end_date 2023-12-31` |
+| `--output_dir` | The folder where files are stored | `--output_dir data/paris_2023` |
 
-### Pour choisir combien de photos et lesquelles
+### Choosing how many pictures and which ones
 
-| Paramètre | C'est quoi | Conseil |
+| Parameter | What it is | Tip |
 |---|---|---|
-| `--max_cloud` | % de nuages maximum sur toute la tuile satellite (100 × 100 km) | `20` pour des images assez claires |
-| `--max_images` | Nombre maximum de dates | `--max_images 20` |
-| `--sort` | Avec `--max_images` : `date` prend les premières dates, `cloud` les plus claires | `--sort cloud` |
-| `--dry_run` | Juste regarder, sans télécharger | Toujours à faire en premier |
+| `--max_cloud` | Maximum cloud % over the whole satellite tile (100 × 100 km) | `20` for fairly clear images |
+| `--max_images` | Maximum number of dates | `--max_images 20` |
+| `--sort` | With `--max_images`: `date` takes the earliest dates, `cloud` the clearest | `--sort cloud` |
+| `--dry_run` | Only look, do not download | Always do this first |
 
-### Pour la qualité (déjà réglés par défaut, à changer seulement si besoin)
+### Quality (already set by default, change only if needed)
 
-| Paramètre | Défaut | C'est quoi |
+| Parameter | Default | What it is |
 |---|---|---|
-| `--min_valid_fraction` | `0.99` | Au moins 99 % des pixels doivent être bons dans les 13 bandes |
-| `--max_cloud_fraction` | `1.0` (désactivé) | % max de nuages **dans ton carré de 10 km**, plus précis que `--max_cloud`. Exemple : `0.05` = 5 % |
-| `--max_artefact_fraction` | `0.05` | % max de pixels abîmés par le capteur |
-| `--max_saturated_fraction` | `0.01` | % max de pixels trop brillants |
-| `--harmonize` | désactivé | Retire le décalage de +1000 que l'ESA ajoute aux valeurs depuis 2022. Utile pour comparer avec d'anciennes données |
+| `--min_valid_fraction` | `0.99` | At least 99 % of pixels must be good in all 13 bands |
+| `--max_cloud_fraction` | `1.0` (off) | Maximum cloud % **inside your 10 km square**, more precise than `--max_cloud`. Example: `0.05` = 5 % |
+| `--max_artefact_fraction` | `0.05` | Maximum % of pixels damaged by the sensor |
+| `--max_saturated_fraction` | `0.01` | Maximum % of pixels that are too bright |
+| `--harmonize` | off | Removes the +1000 offset ESA has added to the values since 2022. Useful to compare with older data |
 
-**Astuce :** si tu veux des images vraiment sans nuages sur ta zone, combine `--max_cloud 30` (tri
-grossier, rapide) et `--max_cloud_fraction 0.05` (tri fin sur ton carré).
+**Tip:** for images that are really cloud-free over your area, combine `--max_cloud 30` (rough, fast
+sort) with `--max_cloud_fraction 0.05` (fine sort on your square).
 
-Pour voir **tous** les paramètres :
+To see **all** parameters:
 
 ```bash
 .venv\Scripts\python.exe s2_l1c_pipeline.py --help
@@ -182,7 +182,7 @@ Pour voir **tous** les paramètres :
 
 ---
 
-## Source des données
+## Data source
 
 Contains modified Copernicus Sentinel data, provided by the
 [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu/).
