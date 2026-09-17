@@ -9,6 +9,12 @@ and date range (collection `sentinel-2-l1c`). It keeps at most one acquisition p
 quality, and saves the accepted ones on a common 10 m UTM grid. Every returned granule, saved or not, is
 documented in `metadata.csv`.
 
+The test data was obtained with:
+
+```powershell
+C:\venvs\s2\Scripts\python.exe s2_l1c_pipeline.py --lat 48.8566 --lon 2.3522 --start_date 2023-06-04 --end_date 2023-06-04 --max_images 1 --access s3 --output_dir ./data/test
+```
+
 ---
 
 ## What happens inside the pipeline
