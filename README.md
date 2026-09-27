@@ -253,6 +253,86 @@ then fine sort):
 .venv\Scripts\python.exe s2_l1c_pipeline.py --lat 48.8566 --lon 2.3522 --start_date 2023-01-01 --end_date 2023-12-31 --max_cloud 30 --max_cloud_fraction 0.05 --require_quality_masks --output_dir data/paris_2023_clear
 ```
 
+### Quick-look images
+
+`visualize_npz.py` turns any saved `.npz` into two PNG figures (true colour, false colour, NDVI,
+a zoom comparing the 10/20/60 m bands, and a sheet of all 13 bands):
+
+```bash
+C:\venvs\s2\Scripts\python.exe visualize_npz.py data/test/2023-06-04_31UDQ.npz
+```
+
+---
+
+## Building a full dataset: AOI list and batch runs
+
+The pipeline handles one location. Three extra scripts turn it into a dataset builder.
+
+### 1. The coordinate list
+
+`sites/worldstrat_aoi.csv` holds **3 928 areas of interest** taken from the
+[WorldStrat dataset](https://zenodo.org/records/6810792) (Cornebise et al., CC-BY-4.0), with one
+row per AOI: `site_id, lat, lon, source, ipcc_class, lccs_class, smod_class, split`.
+
+To regenerate it from the official metadata (downloads ~15 MB, not the imagery):
+
+```bash
+C:\venvs\s2\Scripts\python.exe build_worldstrat_aoi.py
+```
+
+Any CSV with `lat` and `lon` columns works, so you can supply your own list instead.
+
+### 2. Running the list
+
+`run_sites.py` calls the pipeline once per site, writing to `<output_root>/<site_id>/`:
+
+```bash
+C:\venvs\s2\Scripts\python.exe run_sites.py --sites sites/worldstrat_aoi.csv --output_root data/worldstrat --start_date 2023-01-01 --end_date 2023-12-31 --max_cloud 20 --max_images 4 --sort cloud
+```
+
+Every option it does not consume is forwarded to `s2_l1c_pipeline.py` unchanged, so per-site
+behaviour is exactly the single-site behaviour (including `--dry_run`).
+
+| Parameter | Default | What it is |
+|---|---|---|
+| `--sites` | required | CSV with `lat`, `lon` and optionally `site_id` |
+| `--output_root` | required | One sub-folder per site is created here |
+| `--limit`, `--skip` | all, `0` | Process N sites / skip the first N (shard across machines) |
+| `--sleep` | `2.0` | Pause between sites. CDSE rate-limits bursts of catalogue queries (HTTP 429) |
+| `--site_retries` | `3` | Attempts per site after a fatal error |
+| `--retry_wait` | `60` | Seconds before the first retry, doubled each time |
+| `--redo` | off | Re-run sites already marked `done` |
+| `--stop_on_error` | off | Stop at the first failing site instead of continuing |
+
+Progress is appended to `<output_root>/sites_progress.csv`. Re-running the same command skips
+finished sites, and inside a site the pipeline skips dates already on disk, so an interrupted
+run resumes where it stopped. A `--dry_run` never writes to the progress log.
+
+### 3. Is the list representative?
+
+`analyze_aoi_bias.py` compares the AOIs against where land actually is, using the
+Köppen-Geiger climate map (Beck et al. 2018) and Natural Earth country polygons as references:
+
+```bash
+C:\venvs\s2\Scripts\python.exe analyze_aoi_bias.py
+```
+
+It writes figures, LaTeX tables and `report/generated/stats.json`, plus an annotated CSV giving
+the climate, continent and land-cover class of every AOI. The full write-up is
+[`report/worldstrat_aoi_report.pdf`](report/worldstrat_aoi_report.pdf) (rebuild with
+`pdflatex worldstrat_aoi_report.tex` inside `report/`). Headline findings:
+
+| Finding | Number |
+|---|---|
+| Built-up AOIs vs built-up share of land | 43 % vs ~1 % (two orders of magnitude) |
+| Temperate / tropical climates | over-represented ×1.9 / ×1.5 |
+| Polar / arid climates | under-represented ×0.2 / ×0.8 |
+| Oceania / Antarctica | ×0.45 / ×0.07 |
+| AOIs closer to each other than one footprint | 18 % (7 169 overlapping pairs) |
+| Overlapping pairs across different WorldStrat splits | 2 504 (leakage if those splits are reused) |
+
+The analysis needs three extra packages: `pip install pandas scipy matplotlib`.
+
 ---
 
 ## The parameters you care about

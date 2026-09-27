@@ -1,0 +1,70 @@
+{
+  "n_aoi": 3928,
+  "n_on_land": 3924,
+  "sources": {
+    "Landcover": 2407,
+    "UNHCR": 981,
+    "ASMSpotter": 351,
+    "Amnesty": 189
+  },
+  "ipcc": {
+    "Settlement": 1700,
+    "Forest": 734,
+    "Agriculture": 700,
+    "Other": 418,
+    "Grassland": 205,
+    "Water": 59,
+    "Wetland": 41
+  },
+  "smod_urban_share": 0.2914969450101833,
+  "splits": {
+    "train": 3114,
+    "test": 390,
+    "val": 386,
+    "unassigned": 38
+  },
+  "chi2_koppen_groups": {
+    "chi2": 1036.919836138462,
+    "dof": 4,
+    "p_value": 3.558529227586809e-223,
+    "classes_tested": 5,
+    "total_variation_distance": 0.20955374428998724
+  },
+  "chi2_continents": {
+    "chi2": 503.41206987201826,
+    "dof": 6,
+    "p_value": 1.5476259300522356e-105,
+    "classes_tested": 7,
+    "total_variation_distance": 0.13958743878106084
+  },
+  "chi2_latitude": {
+    "chi2": 790.0128516092904,
+    "dof": 6,
+    "p_value": 2.2144516201186293e-167,
+    "classes_tested": 7,
+    "total_variation_distance": 0.20104544094262528
+  },
+  "clustering": {
+    "median_nn_km": 39.55884736841237,
+    "share_within_footprint": 0.1840631364562118,
+    "share_within_50km": 0.554735234215886,
+    "n_unique_clusters_50km": 2771,
+    "overlapping_pairs": {
+      "n_pairs": 7169,
+      "n_sites_involved": 723,
+      "n_cross_split_pairs": 2504,
+      "cross_split_combinations": {
+        "test/train": 1291,
+        "train/val": 1057,
+        "test/val": 152,
+        "train/unassigned": 2,
+        "test/unassigned": 2
+      }
+    }
+  },
+  "landcover_subset": {
+    "n": 2407,
+    "settlement_share": 0.6061487328624844
+  },
+  "settlement_share_all": 0.43279022403258655
+}

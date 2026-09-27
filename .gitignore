@@ -5,6 +5,18 @@ metadata.csv
 *.part
 *.jp2
 
+# Cached reference downloads (WorldStrat metadata, Koppen-Geiger, Natural Earth)
+.cache/
+
+# LaTeX build artefacts
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
 # Python
 __pycache__/
 *.py[cod]
