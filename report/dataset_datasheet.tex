@@ -1,0 +1,181 @@
+% Compile with:  pdflatex dataset_datasheet.tex
+% Two-page description of what the pipeline produces. Numbers measured on real outputs.
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1.75cm]{geometry}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[font=small,labelfont=bf,skip=3pt]{caption}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parskip}{0.25em}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.0}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{0.8em}{0.3em}
+
+\title{\vspace{-1.6cm}Sentinel-2 L1C Time Series: Data Description}
+\author{Khalil Bibi}
+\date{\today}
+
+\begin{document}
+\maketitle
+\vspace{-0.8em}
+
+One acquisition of one site is one compressed NumPy file, \texttt{<YYYY-MM-DD>\_<tile>.npz}.
+All acquisitions of a site share the same grid, so they stack directly into a time series.
+Every granule the catalogue returned --- saved or rejected --- is documented in
+\texttt{metadata.csv} next to the files.
+
+\section{Contents of one file}
+
+\begin{center}
+\small
+\begin{tabular}{llp{8.6cm}}
+\toprule
+Key & Shape / type & Content \\
+\midrule
+\texttt{data}     & $(13,1024,1024)$ \texttt{uint16} & Top-of-atmosphere reflectance, raw ESA digital numbers \\
+\texttt{valid\_mask}   & $(13,1024,1024)$ \texttt{bool} & Per band: the pixel is usable \\
+\texttt{nodata\_mask}  & $(13,1024,1024)$ \texttt{bool} & Per band: no sensor sample backs the pixel \\
+\texttt{valid\_any} / \texttt{valid\_all} & $(1024,1024)$ \texttt{bool} & Valid in at least one / in all 13 bands \\
+\texttt{quality\_bits} & $(13,1024,1024)$ \texttt{uint8} & ESA \texttt{MSK\_QUALIT} flags, one bit per layer (\texttt{quality\_bit\_names}) \\
+\texttt{classification\_mask} & $(3,1024,1024)$ \texttt{uint8} & ESA \texttt{MSK\_CLASSI}: opaque cloud, cirrus, snow/ice \\
+\texttt{bands} & $(13,)$ string & Band order of axis 0 (see below) \\
+\texttt{transform}, \texttt{crs} & $(6,)$ float, string & Affine geotransform and CRS, e.g.\ \texttt{EPSG:32631} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Band order: B01, B02, B03, B04, B05, B06, B07, B08, B8A, B09, B10, B11, B12 --- the 13 MSI
+bands from 443\,nm (coastal aerosol) to 2190\,nm (SWIR).
+
+\section{Geometry}
+
+The footprint is a $1024\times1024$ pixel square at 10\,m, i.e.\ $10.24\times10.24$\,km, in the
+UTM zone of the requested point (metric, so pixels are square everywhere). Its upper-left corner
+is snapped to a multiple of 60\,m, which is the lattice shared by the 10, 20 and 60\,m Sentinel-2
+grids; the grid centre therefore sits a few tens of metres from the requested coordinate
+(23\,m in the reference scene). The same grid is reused for every date of the site, so
+\texttt{[:,\,i,\,j]} is the same 10\,m ground cell in every band and at every date.
+
+\begin{center}
+\small
+\begin{tabular}{llp{7.9cm}}
+\toprule
+Native resolution & Bands & Processing \\
+\midrule
+10\,m & B02, B03, B04, B08 & Copied 1:1, no interpolation, when the granule is in the same UTM zone \\
+20\,m & B05, B06, B07, B8A, B11, B12 & Bilinear interpolation to 10\,m \\
+60\,m & B01, B09, B10 & Bilinear interpolation to 10\,m \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Resampling never invents data across gaps: a target pixel is valid only if every source sample
+in its interpolation kernel is valid, so pixels bordering a no-data area are flagged invalid
+rather than interpolated from partial support. Granules from a neighbouring UTM zone are
+reprojected, and then the 10\,m bands are resampled too (the \texttt{source\_crs} column says
+which case applies).
+
+\section{Radiometry}
+
+Values are Level-1C top-of-atmosphere reflectance, \emph{not} atmospherically corrected (that
+would be Level-2A). Since processing baseline 04.00 --- which covers the whole reprocessed
+archive --- ESA adds an offset of 1000:
+\begin{equation*}
+  \rho_{\text{TOA}} = \frac{\mathrm{DN} - 1000}{10000}.
+\end{equation*}
+Files store raw DN by default and record \texttt{processing\_baseline}; \texttt{--harmonize}
+subtracts the offset at write time and sets the \texttt{harmonized} column. DN 0 means no data
+and DN 65535 marks saturation.
+
+\section{Validity and quality control}
+
+Each pixel is checked against, in order: the source no-data value, the interpolation-support rule
+above, and three ESA masks --- \texttt{MSK\_DETFOO} (no detector imaged the pixel),
+\texttt{MSK\_QUALIT} (lost, degraded, defective, saturated) and \texttt{MSK\_CLASSI} (opaque
+cloud, cirrus, snow/ice). Invalid pixels are set to 0 in \texttt{data} and flagged in the masks.
+
+The acquisition as a whole is then accepted or rejected on measured fractions. Defaults: at least
+99\% of pixels valid in all bands, at most 20\% no-data in the 32-pixel border ring, at most 1\%
+saturated and 5\% artefact samples; the in-square cloud filter is available but off by default,
+since the same information is recorded for filtering afterwards. The \texttt{status} column is
+\texttt{saved} or \texttt{rejected}, with \texttt{rejection\_reason} giving the failing test.
+
+\section{\texttt{metadata.csv}}
+
+One row per granule returned by the search, 45 columns, in five groups:
+
+\begin{itemize}\setlength{\itemsep}{0pt}
+  \item \textbf{Identification} --- file name, date, MGRS tile, ESA scene cloud cover, product
+        id, sensing time, platform, processing baseline, source CRS, AOI coverage.
+  \item \textbf{Decision} --- \texttt{status}, the stage that decided it, and the rejection reason.
+  \item \textbf{Acquisition geometry} --- relative orbit, orbit state, sun elevation and azimuth,
+        view incidence angle, datatake id, processing time. These matter for time-series work:
+        illumination and view angle change between dates.
+  \item \textbf{Pixel statistics} --- valid and no-data fractions overall and per band, edge
+        no-data, per-band min/max/p02/p50/p98 (normalisation without re-reading the arrays).
+  \item \textbf{Quality} --- cloud, cirrus, snow/ice, artefact and saturation fractions, the
+        masks actually read per band, and the quality-control configuration used, so a dataset
+        built over several runs stays auditable.
+\end{itemize}
+
+\section{Volume}
+
+A measured file of a cloud-free urban scene occupies 19.1\,MB (13 bands plus all masks,
+compressed); complex or cloudy scenes compress differently, so 19\,MB is a conservative planning
+figure. Per site, volume is $19\,\text{MB}\times n_{\text{dates}}$; for the 3\,928-site
+WorldStrat list:
+
+\begin{center}
+\small
+\begin{tabular}{lrr}
+\toprule
+Scenario & Dates per site & Total \\
+\midrule
+One clear scene per site & 1 & 75\,GB \\
+One per quarter, 1 year & 4 & 300\,GB \\
+Monthly, 1 year & 12 & 900\,GB \\
+Monthly, 2 years & 24 & 1.8\,TB \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Downloads use the CDSE S3 endpoint and read only the window covering the footprint, not the full
+110\,km granule. The catalogue rate-limits bursts of queries (HTTP 429), so batch runs pause
+between sites and retry with exponential back-off.
+
+\section{Known limitations}
+
+\begin{itemize}\setlength{\itemsep}{0pt}
+  \item \textbf{No atmospheric correction.} L1C is top-of-atmosphere; haze and aerosols are part
+        of the signal. Use L2A, or correct downstream, if surface reflectance is required.
+  \item \textbf{Clouds are flagged, not removed.} No gap filling or temporal interpolation is
+        applied; masked pixels stay 0.
+  \item \textbf{Cloud filtering biases the season.} \texttt{--max\_cloud} selects the dry season,
+        most strongly in the tropics. Widening the date range or filtering afterwards on the
+        recorded per-scene statistics avoids over-selecting.
+  \item \textbf{Irregular time steps.} Revisit is 5 days at best, but cloud and quality rejection
+        leave uneven gaps; dates are not on a regular grid and differ between sites.
+  \item \textbf{The ESA cloud percentage covers the whole granule} (up to $100\times100$\,km),
+        not the 10.24\,km square. The in-square fractions in \texttt{metadata.csv} are the
+        precise figure.
+  \item \textbf{Footprint versus label.} With the WorldStrat list, the land-cover label describes
+        the central 2.4\% of the scene only; see the representativeness report for the sampling
+        biases of that list.
+\end{itemize}
+
+\section{Loading}
+
+{\small
+\begin{verbatim}
+z = np.load("data/site/2023-06-04_31UDQ.npz")
+bands = z["bands"].tolist()                              # ['B01', 'B02', ...]
+refl = (z["data"].astype("float32") - 1000) / 10000      # DN -> reflectance, baseline >= 04.00
+refl[~z["valid_mask"]] = np.nan                          # drop unusable pixels
+\end{verbatim}}
+
+\end{document}
