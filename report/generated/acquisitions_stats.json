@@ -1,0 +1,83 @@
+{
+  "sites_queried": 20,
+  "date_range": [
+    "2015-06-23",
+    "2026-08-31"
+  ],
+  "dates_per_site": {
+    "min": 689,
+    "median": 818.5,
+    "max": 1920,
+    "mean": 1062.1
+  },
+  "revisit_days": {
+    "median": 3.0069444444444446,
+    "p90": 5.000138900462963,
+    "max": 196.99328699074073
+  },
+  "cloud": {
+    "median": 51.943,
+    "share_under_10": 0.24889370115808304,
+    "share_under_20": 0.3174371528104698,
+    "share_over_80": 0.33819790980133696
+  },
+  "platforms": {
+    "sentinel-2b": 10053,
+    "sentinel-2a": 9577,
+    "sentinel-2c": 1612
+  },
+  "baselines": {
+    "05.00": 10891,
+    "05.10": 5318,
+    "05.11": 3520,
+    "05.12": 1489,
+    "99.05": 18,
+    "05.09": 3
+  },
+  "acquisitions_per_year": {
+    "2015": 137,
+    "2016": 910,
+    "2017": 1483,
+    "2018": 2227,
+    "2019": 2076,
+    "2020": 2029,
+    "2021": 2038,
+    "2022": 2059,
+    "2023": 2074,
+    "2024": 2098,
+    "2025": 2444,
+    "2026": 1667
+  },
+  "by_climate": {
+    "Arid": {
+      "sites": 6,
+      "dates": 5241,
+      "median_cloud": 11.679,
+      "clear_share": 0.5636328945
+    },
+    "Cold": {
+      "sites": 5,
+      "dates": 7315,
+      "median_cloud": 64.508,
+      "clear_share": 0.2530416951
+    },
+    "Polar": {
+      "sites": 3,
+      "dates": 3661,
+      "median_cloud": 56.71,
+      "clear_share": 0.3072930893
+    },
+    "Temperate": {
+      "sites": 2,
+      "dates": 1430,
+      "median_cloud": 51.665,
+      "clear_share": 0.2223776224
+    },
+    "Tropical": {
+      "sites": 4,
+      "dates": 3595,
+      "median_cloud": 73.91,
+      "clear_share": 0.1376912378
+    }
+  }
+}
