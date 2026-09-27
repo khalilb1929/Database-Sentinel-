@@ -282,6 +282,20 @@ C:\venvs\s2\Scripts\python.exe build_worldstrat_aoi.py
 
 Any CSV with `lat` and `lon` columns works, so you can supply your own list instead.
 
+### 1b. A balanced subset for a first build
+
+The full list is biased (see below), and its first rows are neighbouring mining sites in
+Suriname. `select_sites_subset.py` picks N sites allocated across Köppen climate groups in
+proportion to global land area, spread by farthest-point sampling:
+
+```bash
+C:\venvs\s2\Scripts\python.exe select_sites_subset.py --n 100
+```
+
+`sites/worldstrat_aoi_100.csv` is the result: climate shares within 0.5 points of the land
+surface, all seven continents represented, closest pair 1 068 km apart, and settlements down
+from 43 % to 31 % of sites. It needs `analyze_aoi_bias.py` to have run once.
+
 ### 2. Running the list
 
 `run_sites.py` calls the pipeline once per site, writing to `<output_root>/<site_id>/`:
@@ -292,6 +306,20 @@ C:\venvs\s2\Scripts\python.exe run_sites.py --sites sites/worldstrat_aoi.csv --o
 
 Every option it does not consume is forwarded to `s2_l1c_pipeline.py` unchanged, so per-site
 behaviour is exactly the single-site behaviour (including `--dry_run`).
+
+**Full archive per site.** To take *every* acquisition since the Sentinel-2 launch instead of a
+selection, drop `--max_cloud`, `--max_images` and `--sort`: the defaults already cover
+2015-06-23 to 2026-08-31 and keep cloudy scenes (clouds are measured and recorded, not filtered).
+
+```bash
+C:\venvs\s2\Scripts\python.exe run_sites.py --sites sites/worldstrat_aoi_100.csv --output_root data/full
+```
+
+Expect roughly 600–1 400 dates per site (measured with `--dry_run`: 629 at 5°N, 1 347 at 49°N,
+1 411 at 70°N, where overlapping orbits add passes), i.e. about **19 GB per site** and
+**~1.9 TB for 100 sites**. Quality control still rejects scenes below its thresholds, always
+logging the reason in `metadata.csv`; to keep literally everything, add
+`--min_valid_fraction 0 --max_edge_nodata_fraction 1 --max_saturated_fraction 1 --max_artefact_fraction 1`.
 
 | Parameter | Default | What it is |
 |---|---|---|

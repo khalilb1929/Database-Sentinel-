@@ -1,0 +1,101 @@
+site_id,lat,lon,source,ipcc_class,smod_class,split,koppen_code,koppen_group,continent
+ASMSpotter-19-3-1,4.853516,-54.491923,ASMSpotter,Forest,Rural: Very Low Dens,train,Af,Tropical,South America
+Landcover-1055780,38.822331,85.545887,Landcover,Other,Rural: Very Low Dens,train,BWk,Arid,Asia
+Landcover-1089999,24.541276,124.319611,Landcover,Water,Water,train,Af,Tropical,Asia
+Landcover-1133173,60.349273,-153.554869,Landcover,,Rural: Very Low Dens,train,ET,Polar,North America
+Landcover-1135711,-76.56916,-70.667624,Landcover,,Rural: Very Low Dens,train,EF,Polar,Antarctica
+Landcover-113751,-29.46336,150.306717,Landcover,Forest,Rural: Very Low Dens,train,Cfa,Temperate,Oceania
+Landcover-1265701,-66.583835,51.175467,Landcover,,Rural: Very Low Dens,train,EF,Polar,Antarctica
+Landcover-1266451,36.934922,71.705912,Landcover,,Rural: Very Low Dens,val,ET,Polar,Asia
+Landcover-1287118,27.870667,92.514602,Landcover,,Rural: Very Low Dens,test,ET,Polar,Asia
+Landcover-1301729,-8.309585,111.461096,Landcover,Agriculture,Water,train,Am,Tropical,Asia
+Landcover-1304310,22.924351,-83.097695,Landcover,Agriculture,Rural: Very Low Dens,train,Af,Tropical,North America
+Landcover-1318737,-7.409161,-36.357979,Landcover,Agriculture,Rural: Very Low Dens,train,BSh,Arid,South America
+Landcover-1337578,3.719941,113.988738,Landcover,Agriculture,Rural: Very Low Dens,train,Af,Tropical,Asia
+Landcover-1425149,-4.731432,-61.340879,Landcover,Forest,Rural: Very Low Dens,train,Af,Tropical,South America
+Landcover-144196,51.231025,130.160032,Landcover,Forest,Rural: Very Low Dens,train,Dwc,Cold,Europe
+Landcover-1455806,1.211513,13.631729,Landcover,Forest,Rural: Very Low Dens,train,Aw,Tropical,Africa
+Landcover-1536263,4.322795,96.878202,Landcover,Forest,Rural: Very Low Dens,val,Cfb,Temperate,Asia
+Landcover-1562422,38.400752,-87.30437,Landcover,Forest,Rural: Very Low Dens,train,Dfa,Cold,North America
+Landcover-1568936,-13.73844,16.572364,Landcover,Forest,Rural: Very Low Dens,train,Cwb,Temperate,Africa
+Landcover-1600729,-16.091276,48.278444,Landcover,Forest,Rural: Very Low Dens,train,Cwa,Temperate,Africa
+Landcover-1636764,49.085353,-124.658942,Landcover,Forest,Rural: Very Low Dens,train,Dfc,Cold,North America
+Landcover-1726777,35.769553,137.645235,Landcover,Forest,Rural: Very Low Dens,train,Dfb,Cold,Asia
+Landcover-1802539,58.53301,112.332001,Landcover,Forest,Rural: Very Low Dens,train,Dfc,Cold,Europe
+Landcover-1810995,68.801306,140.787899,Landcover,Forest,Rural: Very Low Dens,train,ET,Polar,Europe
+Landcover-1825196,51.296339,93.327883,Landcover,Forest,Rural: Very Low Dens,train,Dfc,Cold,Europe
+Landcover-1888396,58.893985,-127.054922,Landcover,Forest,Rural: Very Low Dens,train,Dfc,Cold,North America
+Landcover-266873,5.052402,47.849919,Landcover,Other,Rural: Very Low Dens,train,BWh,Arid,Africa
+Landcover-267943,-18.758152,-62.707149,Landcover,Other,Rural: Very Low Dens,train,BSh,Arid,South America
+Landcover-307134,-15.390479,-72.122636,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,South America
+Landcover-329772,62.683383,174.50606,Landcover,Other,Rural: Very Low Dens,train,Dfc,Cold,Europe
+Landcover-356633,-22.726007,22.029228,Landcover,Other,Rural: Very Low Dens,train,BWh,Arid,Africa
+Landcover-387497,-30.995558,-67.209569,Landcover,Other,Rural: Very Low Dens,train,BWh,Arid,South America
+Landcover-431158,-16.233646,128.992584,Landcover,Other,Rural: Very Low Dens,test,BSh,Arid,Oceania
+Landcover-451845,-21.864647,-43.087172,Landcover,Grassland,Rural: Very Low Dens,train,Cwa,Temperate,South America
+Landcover-509724,69.945543,-159.026694,Landcover,Grassland,Rural: Very Low Dens,train,Dsc,Cold,North America
+Landcover-53808,27.502133,58.39869,Landcover,Agriculture,Rural: Very Low Dens,train,BWh,Arid,Asia
+Landcover-579295,-20.280164,142.864779,Landcover,Grassland,Rural: Very Low Dens,train,BSh,Arid,Oceania
+Landcover-604673,60.116026,-69.75566,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,North America
+Landcover-607672,80.80194,-87.973302,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,North America
+Landcover-635262,71.821648,-24.592384,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,North America
+Landcover-646012,47.629465,75.697153,Landcover,Other,Rural: Very Low Dens,train,BWk,Arid,Asia
+Landcover-655933,-46.796958,-71.612424,Landcover,Other,Rural: Very Low Dens,test,ET,Polar,South America
+Landcover-675618,47.77237,116.128333,Landcover,Other,Rural: Very Low Dens,train,BSk,Arid,Asia
+Landcover-689237,69.942436,97.338072,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,Europe
+Landcover-692235,65.977465,-98.532629,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,North America
+Landcover-714290,-31.014681,132.29879,Landcover,Other,Rural: Very Low Dens,train,BWh,Arid,Oceania
+Landcover-726269,68.859116,53.717324,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,Europe
+Landcover-730059,32.027215,-9.216051,Landcover,Other,Rural: Low Dens,train,BSh,Arid,Africa
+Landcover-733193,51.895073,-83.897179,Landcover,Forest,Rural: Very Low Dens,train,Dfc,Cold,North America
+Landcover-750496,59.2918,78.7377,Landcover,Wetland,Rural: Very Low Dens,train,Dfc,Cold,Europe
+Landcover-766519,-4.543769,33.99981,Landcover,Wetland,Rural: Very Low Dens,train,BSh,Arid,Africa
+Landcover-768983,53.466381,58.95806,Landcover,Settlement,Rural: Low Dens,train,Dfb,Cold,Europe
+Landcover-769065,0.599207,24.715534,Landcover,Settlement,Urban: Dense,train,Af,Tropical,Africa
+Landcover-769190,56.207763,33.495093,Landcover,Settlement,Rural: cluster,train,Dfb,Cold,Europe
+Landcover-769326,27.715961,-114.882137,Landcover,Settlement,Rural: Very Low Dens,train,BWh,Arid,North America
+Landcover-769809,42.04793,59.397947,Landcover,Settlement,Rural: Low Dens,val,BWk,Arid,Asia
+Landcover-769999,-2.313048,-80.860322,Landcover,Settlement,Rural: Low Dens,train,BWh,Arid,South America
+Landcover-772390,0.774671,127.363055,Landcover,Settlement,Urban: Centre,train,Af,Tropical,Asia
+Landcover-772720,9.549466,138.182674,Landcover,Settlement,Water,train,Af,Tropical,Asia
+Landcover-772956,43.7494,27.009204,Landcover,Settlement,Rural: cluster,train,Dfa,Cold,Europe
+Landcover-773257,-8.275252,-49.266748,Landcover,Settlement,Water,test,Aw,Tropical,South America
+Landcover-773283,62.45396,6.889479,Landcover,Settlement,Water,train,Dfc,Cold,Europe
+Landcover-773502,-31.779922,115.731664,Landcover,Settlement,Urban: Centre,train,Csa,Temperate,Oceania
+Landcover-773903,-37.651625,177.878711,Landcover,Settlement,Rural: Very Low Dens,train,Cfb,Temperate,Oceania
+Landcover-774301,-32.887677,27.382737,Landcover,Settlement,Urban: Dense,val,Cfa,Temperate,Africa
+Landcover-774303,38.938197,-119.844997,Landcover,Settlement,Rural: Very Low Dens,train,Dsb,Cold,North America
+Landcover-774768,-6.359957,155.43958,Landcover,Settlement,Rural: Very Low Dens,test,Af,Tropical,Oceania
+Landcover-774966,42.491694,-2.578263,Landcover,Settlement,Rural: Low Dens,train,BSk,Arid,Europe
+Landcover-775038,9.979417,-84.834615,Landcover,Settlement,Water,val,Aw,Tropical,North America
+Landcover-775685,21.373124,-158.025264,Landcover,Settlement,Water,train,Aw,Tropical,North America
+Landcover-775881,11.054653,124.382587,Landcover,Settlement,Urban: Dense,train,Af,Tropical,Asia
+Landcover-775976,33.478953,9.008192,Landcover,Settlement,Urban: Suburban,train,BWh,Arid,Africa
+Landcover-776216,38.090846,113.461033,Landcover,Settlement,Urban: Suburban,train,Dwa,Cold,Asia
+Landcover-776329,41.863479,43.418207,Landcover,Settlement,Rural: Low Dens,val,Dfb,Cold,Asia
+Landcover-776535,19.859037,110.355444,Landcover,Settlement,Urban: Dense,val,Aw,Tropical,Asia
+Landcover-776710,16.273129,-61.511388,Landcover,Settlement,Urban: Centre,train,Am,Tropical,North America
+Landcover-776965,34.223742,-102.736526,Landcover,Settlement,Rural: cluster,train,BSk,Arid,North America
+Landcover-777857,50.385772,-105.53806,Landcover,Settlement,Rural: Very Low Dens,train,Dfb,Cold,North America
+Landcover-778052,44.667062,-63.646623,Landcover,Settlement,Urban: Centre,train,Dfb,Cold,North America
+Landcover-778242,14.492604,75.923914,Landcover,Settlement,Urban: Centre,train,BSh,Arid,Asia
+Landcover-778476,24.821509,70.534754,Landcover,Settlement,Rural: Very Low Dens,train,BWh,Arid,Asia
+Landcover-778523,19.400987,-102.049764,Landcover,Settlement,Urban: Centre,test,Cwa,Temperate,North America
+Landcover-801984,16.407872,94.976747,Landcover,Agriculture,Rural: Very Low Dens,train,Am,Tropical,Asia
+Landcover-818580,36.907658,100.665538,Landcover,Other,Rural: Very Low Dens,train,Dwc,Cold,Asia
+Landcover-87405,13.601002,-15.274063,Landcover,Agriculture,Rural: Very Low Dens,train,BSh,Arid,Africa
+Landcover-87482,4.596207,-8.009688,Landcover,Agriculture,Rural: Very Low Dens,train,Af,Tropical,Africa
+Landcover-876184,30.156864,23.561685,Landcover,Other,Rural: Very Low Dens,train,BWh,Arid,Africa
+Landcover-888505,47.051956,12.98914,Landcover,Other,Rural: Very Low Dens,train,ET,Polar,Europe
+Landcover-911245,24.232615,1.888116,Landcover,Other,Rural: Very Low Dens,train,BWh,Arid,Africa
+Landcover-936904,25.003118,33.136652,Landcover,Other,Rural: Very Low Dens,test,BWh,Arid,Africa
+Landcover-942569,70.041669,21.939292,Landcover,Other,Rural: Very Low Dens,train,Dfc,Cold,Europe
+Landcover-955740,18.689168,11.89503,Landcover,Other,Rural: Very Low Dens,test,BWh,Arid,Africa
+UNHCR-BFAs004540,12.582222,-1.298333,UNHCR,Agriculture,Rural: Very Low Dens,train,BSh,Arid,Africa
+UNHCR-COLs003237,10.204917,-73.067056,UNHCR,Forest,Rural: Very Low Dens,train,Cwb,Temperate,South America
+UNHCR-ETHs033346,8.45,36.35,UNHCR,Agriculture,Rural: Low Dens,train,Csb,Temperate,Africa
+UNHCR-IRNs006124,33.453008,49.419922,UNHCR,Agriculture,Rural: Low Dens,train,Dsa,Cold,Asia
+UNHCR-PNGs003131,-5.67667,141.029,UNHCR,Agriculture,Rural: Very Low Dens,train,Af,Tropical,Oceania
+UNHCR-SDNs015641,12.978714,23.935907,UNHCR,Agriculture,Rural: Low Dens,train,BSh,Arid,Africa
+UNHCR-YEMs004674,17.45547,50.5777,UNHCR,Other,Rural: Very Low Dens,train,BWh,Arid,Asia
+UNHCR-ZWEs002069,-20.261911,32.357383,UNHCR,Wetland,Rural: Very Low Dens,train,BSh,Arid,Africa
