@@ -26,3 +26,10 @@ venv/
 # Secrets
 .env
 report/generated/acquisitions_sample.csv
+
+# Kept locally, out of the project scope
+visualize_npz.py
+analyze_aoi_bias.py
+analyze_acquisitions.py
+select_sites_subset.py
+report/

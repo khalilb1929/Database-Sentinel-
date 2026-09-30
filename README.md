@@ -253,20 +253,11 @@ then fine sort):
 .venv\Scripts\python.exe s2_l1c_pipeline.py --lat 48.8566 --lon 2.3522 --start_date 2023-01-01 --end_date 2023-12-31 --max_cloud 30 --max_cloud_fraction 0.05 --require_quality_masks --output_dir data/paris_2023_clear
 ```
 
-### Quick-look images
-
-`visualize_npz.py` turns any saved `.npz` into two PNG figures (true colour, false colour, NDVI,
-a zoom comparing the 10/20/60 m bands, and a sheet of all 13 bands):
-
-```bash
-C:\venvs\s2\Scripts\python.exe visualize_npz.py data/test/2023-06-04_31UDQ.npz
-```
-
 ---
 
 ## Building a full dataset: AOI list and batch runs
 
-The pipeline handles one location. Three extra scripts turn it into a dataset builder.
+The pipeline handles one location. Two extra scripts turn it into a dataset builder.
 
 ### 1. The coordinate list
 
@@ -282,19 +273,10 @@ C:\venvs\s2\Scripts\python.exe build_worldstrat_aoi.py
 
 Any CSV with `lat` and `lon` columns works, so you can supply your own list instead.
 
-### 1b. A balanced subset for a first build
-
-The full list is biased (see below), and its first rows are neighbouring mining sites in
-Suriname. `select_sites_subset.py` picks N sites allocated across Köppen climate groups in
-proportion to global land area, spread by farthest-point sampling:
-
-```bash
-C:\venvs\s2\Scripts\python.exe select_sites_subset.py --n 100
-```
-
-`sites/worldstrat_aoi_100.csv` is the result: climate shares within 0.5 points of the land
-surface, all seven continents represented, closest pair 1 068 km apart, and settlements down
-from 43 % to 31 % of sites. It needs `analyze_aoi_bias.py` to have run once.
+`sites/worldstrat_aoi_100.csv` is a ready-made subset of 100 sites for a first build. It is
+balanced across Köppen climate groups in proportion to global land area and spread
+geographically: all seven continents are represented and the closest pair of sites is 1 068 km
+apart, whereas the first 100 rows of the full list are neighbouring mining sites in Suriname.
 
 ### 2. Running the list
 
@@ -335,31 +317,6 @@ logging the reason in `metadata.csv`; to keep literally everything, add
 Progress is appended to `<output_root>/sites_progress.csv`. Re-running the same command skips
 finished sites, and inside a site the pipeline skips dates already on disk, so an interrupted
 run resumes where it stopped. A `--dry_run` never writes to the progress log.
-
-### 3. Is the list representative?
-
-`analyze_aoi_bias.py` compares the AOIs against where land actually is, using the
-Köppen-Geiger climate map (Beck et al. 2018) and Natural Earth country polygons as references:
-
-```bash
-C:\venvs\s2\Scripts\python.exe analyze_aoi_bias.py
-```
-
-It writes figures, LaTeX tables and `report/generated/stats.json`, plus an annotated CSV giving
-the climate, continent and land-cover class of every AOI. The full write-up is
-[`report/worldstrat_aoi_report.pdf`](report/worldstrat_aoi_report.pdf) (rebuild with
-`pdflatex worldstrat_aoi_report.tex` inside `report/`). Headline findings:
-
-| Finding | Number |
-|---|---|
-| Built-up AOIs vs built-up share of land | 43 % vs ~1 % (two orders of magnitude) |
-| Temperate / tropical climates | over-represented ×1.9 / ×1.5 |
-| Polar / arid climates | under-represented ×0.2 / ×0.8 |
-| Oceania / Antarctica | ×0.45 / ×0.07 |
-| AOIs closer to each other than one footprint | 18 % (7 169 overlapping pairs) |
-| Overlapping pairs across different WorldStrat splits | 2 504 (leakage if those splits are reused) |
-
-The analysis needs three extra packages: `pip install pandas scipy matplotlib`.
 
 ---
 
