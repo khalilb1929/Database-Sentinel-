@@ -25,3 +25,4 @@ venv/
 
 # Secrets
 .env
+report/generated/acquisitions_sample.csv
